@@ -12,10 +12,13 @@ import { Input } from "../components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card } from "@/components/ui/card";
-import { Link } from "react-router-dom";
-import { RouteSignUp } from "@/helpers/RouteName";
+import { Link, useNavigate } from "react-router-dom";
+import { RouteIndex, RouteSignUp } from "@/helpers/RouteName";
+import { showToast } from "@/helpers/showToast";
+import { getEnv } from "@/helpers/getEnv";
 
 const SignIn = () => {
+  const navigate = useNavigate();
   const formSchema = z.object({
     email: z.string().email(),
     password: z.string().min(6, "Password must be at least 6 characters long."),
@@ -27,8 +30,26 @@ const SignIn = () => {
       password: "",
     },
   });
-  function onSubmit(values) {
-    console.log(values);
+  async function onSubmit(values) {
+    try {
+      const response = await fetch(
+        `${getEnv("VITE_API_BASE_URL")}/auth/login`,
+        {
+          method: "post",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(values),
+        },
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        showToast("error", data.message);
+      }
+      navigate(RouteIndex);
+      showToast("success", data.message);
+    } catch (error) {
+      showToast("error", error.message);
+    }
   }
   return (
     <div className="flex justify-center items-center h-screen w-screen">
@@ -74,7 +95,12 @@ const SignIn = () => {
               </Button>
               <div className="mt-5 text-sm flex justify-center items-center gap-2">
                 <p>Don&apos;t have an account?</p>
-                <Link className="text-blue-500 hover:underline" to={RouteSignUp }>Sign Up</Link>
+                <Link
+                  className="text-blue-500 hover:underline"
+                  to={RouteSignUp}
+                >
+                  Sign Up
+                </Link>
               </div>
             </div>
           </form>
