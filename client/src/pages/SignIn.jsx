@@ -16,6 +16,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { RouteIndex, RouteSignUp } from "@/helpers/RouteName";
 import { showToast } from "@/helpers/showToast";
 import { getEnv } from "@/helpers/getEnv";
+import GoogleLogin from "@/components/GoogleLogin";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ const SignIn = () => {
       );
       const data = await response.json();
       if (!response.ok) {
-        showToast("error", data.message);
+        return showToast("error", data.message);
       }
       navigate(RouteIndex);
       showToast("success", data.message);
@@ -57,6 +58,12 @@ const SignIn = () => {
         <h1 className="text-2xl font-bold text-center mb-3">
           Login Into Account
         </h1>
+        <div>
+          <GoogleLogin />
+          <div className="border my-5 flex justify-center items-center">
+            <span className="absolute bg-white text-sm">Or</span>
+          </div>
+        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="mb-3">
