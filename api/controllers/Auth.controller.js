@@ -56,7 +56,7 @@ export const Login = async (req, res, next) => {
     delete newUser.password
     res.status(200).json({
       success: true,
-      newUser,
+      user: newUser,
       message: "Login Successful.",
     })
   } catch (error) {
@@ -96,7 +96,7 @@ export const GoogleLogin = async (req, res, next) => {
     delete newUser.password
     res.status(200).json({
       success: true,
-      newUser,
+      user: newUser,
       message: "Login Successful.",
     })
   } catch (error) {
