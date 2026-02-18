@@ -5,7 +5,7 @@ import { MdLogin } from "react-icons/md";
 import { Input } from "./ui/input";
 import SearchBox from "./SearchBox";
 import userIcon from "@/assets/images/user.png";
-import { RouteIndex, RouteSignIn } from "../helpers/RouteName";
+import { RouteIndex, RouteProfile, RouteSignIn } from "../helpers/RouteName";
 import { useDispatch, useSelector } from "react-redux";
 import { FaRegUser } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa6";
@@ -81,7 +81,7 @@ const Topbar = () => {
                   <p className="text-sm">{user.user.email}</p>
                 </DropdownMenuLabel>
                 <DropdownMenuItem asChild className="cursor-pointer">
-                  <Link to="">
+                  <Link to={RouteProfile}>
                     <FaRegUser />
                     Profile
                   </Link>
