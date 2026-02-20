@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import logo from "/src/assets/images/logo-white.png";
 import { MdLogin } from "react-icons/md";
-import { Input } from "./ui/input";
 import SearchBox from "./SearchBox";
 import userIcon from "@/assets/images/user.png";
 import { RouteIndex, RouteProfile, RouteSignIn } from "../helpers/RouteName";

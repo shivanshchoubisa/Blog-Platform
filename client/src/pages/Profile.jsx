@@ -1,5 +1,7 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import userIcon from "@/assets/images/user.png";
 import { Card, CardContent } from "@/components/ui/card";
+import { IoCameraOutline } from "react-icons/io5";
 import {
   Form,
   FormControl,
@@ -18,24 +20,33 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import { useFetch } from "@/hooks/useFetch";
+import Loading from "@/components/Loading";
+import { useEffect, useState } from "react";
+import Dropzone from "react-dropzone";
+import { setUser } from "@/redux/user/user.slice";
 
 const Profile = () => {
-  const user = useSelector((state) => state.user )
+
+  const [filePreview, setFilePreview] = useState()
+  const [file, setFile] = useState()
+  const user = useSelector((state) => state.user);
   const {
     data: userData,
     loading,
     error,
-  } = useFetch(`${getEnv("VITE_API_BASE_URL")}/user/get-user/${user.user._id}`, {
-    method: "get",
-    credentials: "include",
-  });
+  } = useFetch(
+    `${getEnv("VITE_API_BASE_URL")}/user/get-user/${user.user._id}`,
+    {
+      method: "get",
+      credentials: "include",
+    },
+  );
   const dispatch = useDispatch();
 
   const formSchema = z.object({
     name: z.string().min(3, "Name must be at least 3 characters long."),
     email: z.string().email(),
     bio: z.string().max(160, "Bio must be less than 160 characters long."),
-    password: z.string(),
   });
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -47,17 +58,27 @@ const Profile = () => {
     },
   });
 
-  if(loading) return <div>Loading...</div>
+  useEffect(() => {
+    if (userData && userData.success) {
+      form.reset({
+        name: userData.user.name,
+        email: userData.user.email,
+        bio: userData.user.bio,
+      });
+    }
+  }, [userData]);
 
   async function onSubmit(values) {
     try {
+      const formData = new FormData()
+      formData.append("file", file)
+      formData.append("data", JSON.stringify(values))
       const response = await fetch(
-        `${getEnv("VITE_API_BASE_URL")}/auth/login`,
+        `${getEnv("VITE_API_BASE_URL")}/user/update-user/${userData.user._id}`,
         {
-          method: "post",
-          headers: { "Content-Type": "application/json" },
+          method: "put",
           credentials: "include",
-          body: JSON.stringify(values),
+          body: formData,
         },
       );
       const data = await response.json();
@@ -70,13 +91,32 @@ const Profile = () => {
       showToast("error", error.message);
     }
   }
+
+  const handleFileSelect = (files) => {
+    const file = files[0]
+    const preview = URL.createObjectURL(file)
+    setFile(file)
+    setFilePreview(preview)
+  }
+
+  if (loading) return <Loading />;
   return (
     <Card className="max-w-screen-md mx-auto">
       <CardContent>
         <div className="flex justify-center items-center mt-10">
-          <Avatar className="w-25 h-25">
-            <AvatarImage src="https://github.com/shadcn.png" />
-          </Avatar>
+          <Dropzone onDrop={(acceptedFiles) => handleFileSelect(acceptedFiles)}>
+            {({ getRootProps, getInputProps }) => (
+              <div {...getRootProps()}>
+                <input {...getInputProps()} />
+                <Avatar className="w-25 h-25 relative group">
+                  <AvatarImage src={filePreview ? filePreview : userData?.user?.avatar || userIcon} />
+                  <div className="absolute z-10 w-full h-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-center bg-black opacity-20 border-2 border-violet-500 rounded-full group-hover:flex hidden cursor-pointer">
+                    <IoCameraOutline color="#7c3aed" />
+                  </div>
+                </Avatar>
+              </div>
+            )}
+          </Dropzone>
         </div>
         <div>
           <Form {...form}>
@@ -119,7 +159,7 @@ const Profile = () => {
                     <FormItem>
                       <FormLabel>Bio</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Enter your bio" {...field} />
+                        <Textarea type='text' placeholder="Enter your bio" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
