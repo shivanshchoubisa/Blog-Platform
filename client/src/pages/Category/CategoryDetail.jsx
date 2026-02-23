@@ -16,8 +16,12 @@ import {
 import { useFetch } from "@/hooks/useFetch";
 import { getEnv } from "@/helpers/getEnv";
 import Loading from "@/components/Loading";
+import { deleteData } from "@/helpers/handleDelete";
+import { showToast } from "@/helpers/showToast";
+import { useState } from "react";
 
 const CategoryDetail = () => {
+  const [refreshData, setRefreshData] = useState(false)
   const {
     data: categoryData,
     loading,
@@ -25,8 +29,18 @@ const CategoryDetail = () => {
   } = useFetch(`${getEnv("VITE_API_BASE_URL")}/category/all`, {
     method: "get",
     credentials: "include",
-  });
-  console.log(categoryData)
+  }, [refreshData]);
+  
+  const handleDelete = (id) => {
+      const response = deleteData(`${getEnv("VITE_API_BASE_URL")}/category/delete/${id}`)
+      if(response){
+        setRefreshData(!refreshData)
+        showToast('success', 'Data Deleted.')
+      } else{
+        showToast('error', 'Data not Deleted.')
+      }
+  }
+
   if (loading) return <Loading />;
   return (
     <div>
@@ -48,33 +62,41 @@ const CategoryDetail = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {categoryData && categoryData.category.length > 0 ? 
-              categoryData.category.map(category => 
-                <TableRow key={category._id}>
-                <TableCell>{category.name}</TableCell>
-                <TableCell>{category.slug}</TableCell>
-                <TableCell className="flex gap-2">
-                  <Button variant="outline" className="hover:bg-blue-600 hover:text-white" asChild>
-                    <Link to={RouteEditCategory(category._id)}>
-                    <FiEdit />
-                    </Link>
-                  </Button>
-                  <Button variant="outline" className="hover:bg-blue-600 hover:text-white" asChild>
-                    <Link to={RouteEditCategory(category._id)}>
-                    <FaRegTrashAlt />
-                    </Link>
-                  </Button>
-                </TableCell>
-                
-              </TableRow>
-              ) 
-              : 
-              <TableRow>
-                <TableCell colSpan="3">
-                  No category found. Please add some category.
-                </TableCell>
-              </TableRow>
-              }
+              {categoryData && categoryData.category.length > 0 ? (
+                categoryData.category.map((category) => (
+                  <TableRow key={category._id}>
+                    <TableCell>{category.name}</TableCell>
+                    <TableCell>{category.slug}</TableCell>
+                    <TableCell className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        className="hover:bg-blue-600 hover:text-white"
+                        asChild
+                      >
+                        <Link to={RouteEditCategory(category._id)}>
+                          <FiEdit />
+                        </Link>
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        className="hover:bg-blue-600 hover:text-white"
+                        asChild
+                        onClick={() => handleDelete(category._id)}
+                      >
+                        <Link to={RouteEditCategory(category._id)}>
+                          <FaRegTrashAlt />
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan="3">
+                    No category found. Please add some category.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>

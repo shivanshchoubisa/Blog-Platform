@@ -8,6 +8,6 @@ export const RouteEditCategory = (category_id) => {
     if(category_id){
     return `/category/edit/${category_id}`
     } else {
-        return `/caregory/edit/:category_id`
+        return `/category/edit/:category_id`
     }
 }

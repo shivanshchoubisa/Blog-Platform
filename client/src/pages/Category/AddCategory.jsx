@@ -30,13 +30,14 @@ const AddCategory = () => {
     },
   });
 
-  useEffect(() => {
-    const categoryName = form.watch('name')
-    if (categoryName) {
-        const slug = slugify(categoryName, {lower: true})
-        form.setValue('slug', slug)
-    }
-  })
+  const categoryName = form.watch('name')
+    useEffect(() => {
+      
+      if (categoryName) {
+          const slug = slugify(categoryName, {lower: true})
+          form.setValue('slug', slug)
+      }
+    },[categoryName])
 
 
   async function onSubmit(values) {
