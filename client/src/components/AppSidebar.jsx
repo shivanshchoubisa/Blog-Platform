@@ -14,6 +14,7 @@ import { GrBlog } from "react-icons/gr";
 import { GoComment } from "react-icons/go";
 import { FiUsers } from "react-icons/fi";
 import { GoDot } from "react-icons/go";
+import { RouteCategoryDetail } from "@/helpers/RouteName";
 
 
 export function AppSidebar() {
@@ -34,7 +35,7 @@ export function AppSidebar() {
                 <SidebarMenuItem>
                     <SidebarMenuButton>
                       <TbCategory />
-                        <Link to="">Category</Link>
+                        <Link to={RouteCategoryDetail}>Category</Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
