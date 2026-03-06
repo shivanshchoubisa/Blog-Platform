@@ -14,8 +14,8 @@ export const deleteData = async (endpoint) => {
         } catch (error) {
             console.log(error)
             return false
-        } else {
+        } 
+    } else {
             return false
         }
-    }
 }

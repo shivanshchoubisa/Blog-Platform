@@ -11,3 +11,13 @@ export const RouteEditCategory = (category_id) => {
         return `/category/edit/:category_id`
     }
 }
+
+export const RouteBlog = '/blogs'
+export const RouteBlogAdd = '/blogs/add'
+export const RouteBlogEdit = (blogid) => {
+    if(blogid){
+    return `/blogs/edit/${blogid}`
+    } else {
+        return `/blogs/edit/:blogid`
+    }
+}

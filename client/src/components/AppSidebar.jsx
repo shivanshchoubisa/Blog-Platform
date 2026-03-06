@@ -14,7 +14,7 @@ import { GrBlog } from "react-icons/gr";
 import { GoComment } from "react-icons/go";
 import { FiUsers } from "react-icons/fi";
 import { GoDot } from "react-icons/go";
-import { RouteCategoryDetail } from "@/helpers/RouteName";
+import { RouteBlog, RouteCategoryDetail } from "@/helpers/RouteName";
 
 
 export function AppSidebar() {
@@ -41,7 +41,7 @@ export function AppSidebar() {
                 <SidebarMenuItem>
                     <SidebarMenuButton>
                       <GrBlog />
-                        <Link to="">Blogs</Link>
+                        <Link to={RouteBlog}>Blogs</Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
