@@ -27,11 +27,15 @@ import { showToast } from "@/helpers/showToast";
 import { useFetch } from "@/hooks/useFetch";
 import Dropzone from "react-dropzone";
 import Editor from "@/components/Editor";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { RouteBlog } from "@/helpers/RouteName";
 
 const AddBlog = () => {
+  const navigate = useNavigate()
   const [filePreview, setFilePreview] = useState();
   const [file, setFile] = useState();
-
+  const user = useSelector((state) => state.user)
   const {
     data: categoryData,
     loading,
@@ -68,25 +72,34 @@ const AddBlog = () => {
   }, [blogTitle]);
 
   async function onSubmit(values) {
-    console.log(values)
-    // try {
-    //   const response = await fetch(
-    //     `${getEnv("VITE_API_BASE_URL")}/category/add`,
-    //     {
-    //       method: "post",
-    //       headers: { "Content-Type": "application/json" },
-    //       body: JSON.stringify(values),
-    //     },
-    //   );
-    //   const data = await response.json();
-    //   if (!response.ok) {
-    //     return showToast("error", data.message);
-    //   }
-    //   form.reset()
-    //   showToast("success", data.message);
-    // } catch (error) {
-    //   showToast("error", error.message);
-    // }
+    try {
+          const newValues = {...values, author: user.user._id}
+          if (!file) {
+            showToast('error', 'Image Required')
+          }
+          const formData = new FormData()
+          formData.append("file", file)
+          formData.append("data", JSON.stringify(newValues))
+          const response = await fetch(
+            `${getEnv("VITE_API_BASE_URL")}/blog/add`,
+            {
+              method: "post",
+              credentials: "include",
+              body: formData,
+            },
+          );
+          const data = await response.json();
+          if (!response.ok) {
+            return showToast("error", data.message);
+          }
+          form.reset()
+          setFile()
+          setFilePreview()
+          navigate(RouteBlog)
+          showToast("success", data.message);
+        } catch (error) {
+          showToast("error", error.message);
+        }
   }
   const handleFileSelect = (files) => {
     const file = files[0];
@@ -98,6 +111,7 @@ const AddBlog = () => {
     <div>
       <Card className="pt-5 max-w-screen-md mx-auto ">
         <CardContent>
+          <h1 className="text-2xl font-bold mb-5">Add Blog</h1>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="mb-3">
